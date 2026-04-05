@@ -5,19 +5,13 @@ See `log/` for daily entries on what was actually done.
 
 ---
 
-## Phase 0 — RPi Cluster Cleanup
+## Phase 0 — RPi Cluster Cleanup ✅
 
-- [ ] Strip ArgoCD finalizers from `longhorn` + `qdrant` apps
-- [ ] Delete clickstack resources manually — deployments, services, configmaps, PVCs (35Gi to reclaim)
-  - `clickstack-mongodb` (CrashLoopBackOff, 6,062 restarts)
-  - `clickstack-otel-collector` (12,884 restarts)
-  - `clickstack-app` + `clickstack-clickhouse`
-  - Note: can't cascade-delete the ArgoCD `observability-stack` app — otel collectors are bundled in the same kustomization
-- [ ] Delete all ArgoCD apps → delete `argocd` namespace
-- [ ] Delete `cloudhaven-agent` deployment (default ns, dead for 111 days)
-- [ ] `helm uninstall twingate` + delete `twingate-connector` namespace
-- [ ] Delete `pi-tunnel` deployment from `nginx-ingress` namespace
-- [ ] Fix K8s-Bootstrap repo: reset local to match origin (force-pushed), remove `clickstack/` dir, remove `observability.yaml` ArgoCD app definition
+- [x] Wiped all 3 RPis with k3s-uninstall.sh / k3s-agent-uninstall.sh + reboot
+  - pi-1 (10.0.0.179) — control plane, needed manual reboot after script killed SSH session
+  - pi-2 (10.0.0.226) — worker, clean
+  - pi-3 (10.0.0.129) — worker, clean
+- [ ] Fix K8s-Bootstrap repo — remove `afo-pi-cluster/` dir, replace with `nebulosa/` structure
 
 ---
 
