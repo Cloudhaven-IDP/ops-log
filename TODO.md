@@ -79,6 +79,43 @@ See `log/` for daily entries on what was actually done.
 
 ---
 
+## Phase 6 — Portfolio Site + Ask-the-Desk Agent
+
+Plan: [`plans/2026-04-21-afolabi-next-plan.md`](plans/2026-04-21-afolabi-next-plan.md)
+
+### afolabi-next (frontend)
+
+- [x] Scaffold Next.js 16 + Tailwind v4 + MDX at `/Users/afolabi/Desktop/project-pi/afolabi-next/`
+- [x] Migrate 5 Hugo posts → `content/posts/*.md` (non-destructive copy from `blog/`)
+- [x] Landing, `/posts`, `/posts/[slug]`, `/ask`, `/resume` pages
+- [x] `/api/ask` thin proxy → `$AGENT_URL/ask`
+- [x] `Dockerfile` (standalone, 3-stage, node:22-alpine, non-root)
+- [ ] Populate `content/experience.yaml` with real roles / certifications / education
+- [ ] Create Cloudflare R2 bucket for resume PDF (custom domain `resume.cloudhaven.work`)
+- [ ] Upload `afolabi-fajobi-resume.pdf` to R2
+- [ ] Set `RESUME_URL` in SSM Parameter Store → ESO → pod env
+- [ ] `nextjs-ci/` composite in `Cloudhaven-IDP/Actions` (lint + typecheck + build)
+- [ ] `afolabi-next/.github/workflows/` — ci + build-deploy-dev + promote-to-prod (mirrors Theo shape)
+- [ ] `gitops/apps/afolabi-next/` — Deployment + Service + HTTPRoute + ExternalSecret + overlays
+- [ ] Public-zone cert for `afolabi.cloudhaven.work` via existing cert-manager Cloudflare DNS-01 ClusterIssuer
+- [ ] ArgoCD Application registered
+- [ ] Cloudflare Worker rate-limiter at `afolabi-next/edge/ratelimit/` — KV per-IP token bucket + global cap + Turnstile. Must ship before `/ask` is publicly reachable.
+- [ ] Deprecate `blog/` Hugo site — redirect to new domain, archive the dir
+
+### afolabi-desk (agent service — separate repo, upcoming)
+
+- [ ] New repo `Cloudhaven-IDP/afolabi-desk`
+- [ ] Python + Strands or OpenAI Agents SDK
+- [ ] Bedrock Claude Sonnet via `agent_core.model_client.invoke(task="desk.answer", ...)` (reuse pattern from theo-agents)
+- [ ] System prompt + answer-style prompt in Langfuse with 5-min TTL cache
+- [ ] RAG over `afolabi-next/content/posts/` + `experience.yaml` (Ollama `nomic-embed-text` embeddings, Qdrant collection `desk_bio` on humboldt)
+- [ ] `POST /ask` streaming endpoint matching the contract in `afolabi-next/README.md`
+- [ ] `Dockerfile`, `.github/workflows/` (reuse python-ci + docker-build-push-ecr + gitops-bump-overlay)
+- [ ] `gitops/apps/afolabi-desk/` — Deployment, Service (ClusterIP:8080), IRSA role for Bedrock
+- [ ] Bedrock usage gated / capped to avoid scraper-driven bills
+
+---
+
 ## Icebox
 
 - Talos on RPis (operational cleanup, not a priority until after AWS cluster is stable)
